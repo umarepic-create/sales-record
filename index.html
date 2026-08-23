@@ -216,7 +216,7 @@
       color: var(--muted);
       font-weight: 600;
       font-size: 0.8rem;
-    }
+    }z
 
     .legend {
       display: flex;
@@ -495,58 +495,37 @@
     <section class="grid">
       <div class="card kpi">
         <label>Total Revenue</label>
-        <h2>$58,240</h2>
-        <div class="trend up">▲ 12.4% vs last month</div>
+        <h2 id="totalRevenue">NGN0.00</h2>
+        <div class="trend up" id="revenueTrend">Based on recorded sales</div>
       </div>
       <div class="card kpi">
         <label>Orders Served</label>
-        <h2>1,482</h2>
-        <div class="trend up">▲ 8.7% vs last month</div>
+        <h2 id="ordersServed">0</h2>
+        <div class="trend up" id="ordersTrend">Based on recorded sales</div>
       </div>
       <div class="card kpi">
         <label>Average Ticket</label>
-        <h2>$39.28</h2>
-        <div class="trend up">▲ 3.9% vs last month</div>
+        <h2 id="averageTicket">NGN0.00</h2>
+        <div class="trend up">Average recorded sale</div>
       </div>
       <div class="card kpi">
         <label>Refunds / Cancellations</label>
-        <h2>27</h2>
-        <div class="trend down">▼ 1.8% vs last month</div>
+        <h2 id="refundsCount">0</h2>
+        <div class="trend down">Cancelled sales</div>
       </div>
     </section>
 
     <section class="section">
       <div class="panel">
         <h3>Weekly Sales Trend</h3>
-        <div class="bars">
-          <div class="bar-group">
-            <div class="bar" data-value="NGN8.8k" style="height: 46%;"></div>
-            <div>Mon</div>
-          </div>
-          <div class="bar-group">
-            <div class="bar" data-value="NGN10.6k" style="height: 57%;"></div>
-            <div>Tue</div>
-          </div>
-          <div class="bar-group">
-            <div class="bar" data-value="NGN12.2k" style="height: 65%;"></div>
-            <div>Wed</div>
-          </div>
-          <div class="bar-group">
-            <div class="bar" data-value="NGN13.5k" style="height: 72%;"></div>
-            <div>Thu</div>
-          </div>
-          <div class="bar-group">
-            <div class="bar" data-value="NGN15.1k" style="height: 81%;"></div>
-            <div>Fri</div>
-          </div>
-          <div class="bar-group">
-            <div class="bar" data-value="NGN11.7k" style="height: 63%;"></div>
-            <div>Sat</div>
-          </div>
-          <div class="bar-group">
-            <div class="bar" data-value="NGN7.4k" style="height: 40%;"></div>
-            <div>Sun</div>
-          </div>
+        <div class="bars" id="weeklyBars">
+          <div class="bar-group"><div class="bar" data-value="NGN0.00" style="height: 0%;"></div><div>Mon</div></div>
+          <div class="bar-group"><div class="bar" data-value="NGN0.00" style="height: 0%;"></div><div>Tue</div></div>
+          <div class="bar-group"><div class="bar" data-value="NGN0.00" style="height: 0%;"></div><div>Wed</div></div>
+          <div class="bar-group"><div class="bar" data-value="NGN0.00" style="height: 0%;"></div><div>Thu</div></div>
+          <div class="bar-group"><div class="bar" data-value="NGN0.00" style="height: 0%;"></div><div>Fri</div></div>
+          <div class="bar-group"><div class="bar" data-value="NGN0.00" style="height: 0%;"></div><div>Sat</div></div>
+          <div class="bar-group"><div class="bar" data-value="NGN0.00" style="height: 0%;"></div><div>Sun</div></div>
         </div>
         <div class="labels">
           <span>Mon</span>
@@ -799,15 +778,15 @@
         <div class="mini-metrics">
           <div class="mini-card">
             <small>Peak Sales Hour</small>
-            <strong>7:00 PM - 8:00 PM</strong>
+            <strong id="peakHour">No data yet</strong>
           </div>
           <div class="mini-card">
             <small>Top Payment Method</small>
-            <strong>Card (61%)</strong>
+            <strong id="topPayment">No data yet</strong>
           </div>
           <div class="mini-card">
             <small>Guest Repeat Rate</small>
-            <strong>34.8%</strong>
+            <strong id="repeatRate">Based on recorded customers</strong>
           </div>
         </div>
       </div>
