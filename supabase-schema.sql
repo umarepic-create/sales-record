@@ -108,10 +108,6 @@ drop policy if exists "profiles_insert_own" on public.profiles;
 create policy "profiles_insert_own" on public.profiles
 for insert to authenticated with check (id = auth.uid());
 
-drop policy if exists "profiles_update_own" on public.profiles;
-create policy "profiles_update_own" on public.profiles
-for update to authenticated using (id = auth.uid()) with check (id = auth.uid());
-
 drop policy if exists "sales_read_authenticated" on public.sales;
 create policy "sales_read_authenticated" on public.sales
 for select to authenticated using (true);
@@ -119,10 +115,6 @@ for select to authenticated using (true);
 drop policy if exists "sales_insert_authenticated" on public.sales;
 create policy "sales_insert_authenticated" on public.sales
 for insert to authenticated with check (created_by = auth.uid());
-
-drop policy if exists "sales_update_authenticated" on public.sales;
-create policy "sales_update_authenticated" on public.sales
-for update to authenticated using (true) with check (true);
 
 drop policy if exists "sales_delete_admin" on public.sales;
 create policy "sales_delete_admin" on public.sales
@@ -151,8 +143,18 @@ create policy "audit_read_authenticated" on public.audit_log
 for select to authenticated using (true);
 
 grant select on public.profiles, public.sales, public.stock, public.audit_log to authenticated;
-grant insert, update on public.profiles to authenticated;
-grant insert, update, delete on public.sales, public.stock to authenticated;
+grant insert on public.profiles to authenticated;
+grant insert, delete on public.sales to authenticated;
+grant insert, update, delete on public.stock to authenticated;
 
-alter publication supabase_realtime add table public.sales;
-alter publication supabase_realtime add table public.stock;
+do $
+begin
+  begin
+    alter publication supabase_realtime add table public.sales;
+  exception when duplicate_object then null;
+  end;
+  begin
+    alter publication supabase_realtime add table public.stock;
+  exception when duplicate_object then null;
+  end;
+end $;
