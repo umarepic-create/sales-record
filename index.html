@@ -489,7 +489,7 @@
           <small>Sales Record Dashboard</small>
         </div>
       </div>
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;"><div class="summary-pill">Monthly Report • March 2026</div><button class="logout-button" id="logoutButton">Log out</button></div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;"><div class="summary-pill">Shared Cloud Sales Record</div><button class="logout-button" id="logoutButton">Log out</button></div>
     </header>
 
     <section class="grid">
@@ -793,149 +793,9 @@
     </section>
   </div>
 </body>
-<script>
-  const form = document.getElementById('saleForm');
-  const tableBody = document.getElementById('salesTableBody');
-  const recordDate = document.getElementById('recordDate');
-  const dailyTotal = document.getElementById('dailyTotal');
-  const loginScreen = document.getElementById('loginScreen');
-  const loginForm = document.getElementById('loginForm');
-  const loginPasscode = document.getElementById('loginPasscode');
-  const loginError = document.getElementById('loginError');
-  const logoutButton = document.getElementById('logoutButton');
-  const passcodeForm = document.getElementById('passcodeForm');
-  const newPasscode = document.getElementById('newPasscode');
-  const confirmPasscode = document.getElementById('confirmPasscode');
-  const stockForm = document.getElementById('stockForm');
-  const stockItem = document.getElementById('stockItem');
-  const stockQty = document.getElementById('stockQty');
-  const stockList = document.getElementById('stockList');
-  const saleItem = document.getElementById('saleItem');
-  let stock = JSON.parse(localStorage.getItem('falBreezeStock') || '[]');
-  const originalItems = Array.from(saleItem.options).map(option => option.value).filter(Boolean);
 
-  const renderStock = () => {
-    stockList.innerHTML = stock.length ? stock.map((entry, index) => `<div class="stock-row">
-      <div class="stock-edit">
-        <input type="text" value="${entry.name.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" data-stock-name="${index}" aria-label="Food item name">
-        <input type="number" min="0" value="${entry.qty}" data-stock-qty="${index}" aria-label="Quantity in stock">
-      </div>
-      <button type="button" class="logout-button" data-save-stock="${index}">Save</button>
-    </div>`).join('') : '<span style="color:var(--muted);">No food items stocked yet.</span>';
-
-    const selectedItem = saleItem.value;
-    saleItem.innerHTML = '<option value="">Select an item</option>';
-    [...new Set(originalItems.concat(stock.map(entry => entry.name)))].forEach(name => {
-      const option = document.createElement('option');
-      option.value = name;
-      option.textContent = name;
-      saleItem.appendChild(option);
-    });
-    if ([...saleItem.options].some(option => option.value === selectedItem)) saleItem.value = selectedItem;
-  };
-
-  stockForm.addEventListener('submit', event => {
-    event.preventDefault();
-    const name = stockItem.value.trim();
-    const qty = Number(stockQty.value);
-    const existing = stock.find(entry => entry.name.toLowerCase() === name.toLowerCase());
-    if (existing) existing.qty = qty;
-    else stock.push({ name, qty });
-    localStorage.setItem('falBreezeStock', JSON.stringify(stock));
-    stockForm.reset();
-    renderStock();
-  });
-
-  stockList.addEventListener('click', event => {
-    const button = event.target.closest('[data-save-stock]');
-    if (!button) return;
-    const index = Number(button.dataset.saveStock);
-    const nameInput = stockList.querySelector(`[data-stock-name="${index}"]`);
-    const qtyInput = stockList.querySelector(`[data-stock-qty="${index}"]`);
-    const name = nameInput.value.trim();
-    const qty = Number(qtyInput.value);
-    if (!name || qty < 0 || isNaN(qty)) return;
-    stock[index].name = name;
-    stock[index].qty = qty;
-    localStorage.setItem('falBreezeStock', JSON.stringify(stock));
-    renderStock();
-  });
-  renderStock();
-
-  const storedPasscode = () => localStorage.getItem('falBreezePasscode') || '1234';
-  loginForm.addEventListener('submit', event => {
-    event.preventDefault();
-    if (loginPasscode.value === storedPasscode()) {
-      loginScreen.style.display = 'none';
-      loginPasscode.value = '';
-      loginError.textContent = '';
-    } else {
-      loginError.textContent = 'Incorrect passcode.';
-      loginPasscode.select();
-    }
-  });
-  logoutButton.addEventListener('click', () => {
-    loginScreen.style.display = 'grid';
-    loginPasscode.focus();
-  });
-  passcodeForm.addEventListener('submit', event => {
-    event.preventDefault();
-    if (newPasscode.value !== confirmPasscode.value) {
-      confirmPasscode.setCustomValidity('Passcodes do not match.');
-      confirmPasscode.reportValidity();
-      return;
-    }
-    confirmPasscode.setCustomValidity('');
-    localStorage.setItem('falBreezePasscode', newPasscode.value);
-    passcodeForm.reset();
-    alert('Passcode changed successfully.');
-  });
-  const money = value => 'NGN' + Number(value).toFixed(2);
-  const toDateValue = text => {
-    const date = new Date(text);
-    return isNaN(date) ? text : date.toISOString().slice(0, 10);
-  };
-  let sales = JSON.parse(localStorage.getItem('falBreezeSales') || 'null');
-  if (!sales) {
-    sales = Array.from(tableBody.rows).map(row => ({
-      id: row.cells[0].textContent.trim(), date: toDateValue(row.cells[1].textContent.trim()),
-      customer: row.cells[2].textContent.trim(), item: row.cells[3].textContent.trim(),
-      qty: row.cells[4].textContent.trim(), amount: parseFloat(row.cells[5].textContent.replace(/[^0-9.]/g, '')) || 0,
-      payment: row.cells[6].textContent.trim(), status: row.cells[7].textContent.trim()
-    }));
-    localStorage.setItem('falBreezeSales', JSON.stringify(sales));
-  }
-  const renderSales = () => {
-    const selected = recordDate.value;
-    const visible = sales.filter(sale => !selected || sale.date === selected);
-    tableBody.innerHTML = visible.length ? visible.map(sale => `<tr>
-      <td>${sale.id}</td><td>${sale.date}</td><td>${sale.customer}</td><td>${sale.item}</td>
-      <td>${sale.qty}</td><td>${money(sale.amount)}</td><td>${sale.payment}</td>
-      <td><span class="status ${sale.status.toLowerCase()}">${sale.status}</span></td></tr>`).join('') :
-      '<tr><td colspan="8" style="text-align:center; color:var(--muted);">No sales recorded for this day.</td></tr>';
-    dailyTotal.textContent = 'Total sales for selected day: ' + money(visible.reduce((total, sale) => total + Number(sale.amount), 0));
-  };
-  recordDate.value = new Date().toISOString().slice(0, 10);
-  recordDate.addEventListener('change', renderSales);
-  renderSales();
-
-  form.addEventListener('submit', function (event) {
-    event.preventDefault();
-    const date = document.getElementById('saleDate').value;
-    const item = document.getElementById('saleItem').value;
-    const amount = document.getElementById('saleAmount').value;
-    const nextNumber = 1024 + sales.length;
-    sales.push({
-      id: '#FB-' + nextNumber, date, customer: document.getElementById('customerName').value,
-      item, qty: document.getElementById('saleQty').value, amount: Number(amount),
-      payment: document.getElementById('paymentMethod').value, status: 'Paid'
-    });
-    localStorage.setItem('falBreezeSales', JSON.stringify(sales));
-    recordDate.value = date;
-    renderSales();
-    alert('Sale added: ' + item + ' — ' + money(amount));
-    this.reset();
-    document.getElementById('saleQty').value = 1;
-  });
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
 </html>
