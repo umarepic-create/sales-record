@@ -152,7 +152,12 @@ loginForm.addEventListener('submit', async (e) => {
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
   if (error) { showError(error.message); return; }
   currentUser = data.user;
-  await startApp();
+  try {
+    await startApp();
+  } catch (err) {
+    showError(err.message || 'Could not load the sales dashboard.');
+    await sb.auth.signOut();
+  }
 });
 
 $('logoutButton').addEventListener('click', async () => {
